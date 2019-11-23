@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Graphs ChartJS - Sample 4</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css" integrity="sha256-aa0xaJgmK/X74WM224KMQeNQC2xYKwlAt08oZqjeF0E=" crossorigin="anonymous" />
+</head>
+<body>
+
+    <fieldset>
+        <legend>Add value to chart</legend>
+        <label for="ano">Ano</label>
+        <input type="text" name="ano" id="ano">
+        <label for="homens">Homens</label>
+        <input type="text" name="homens" id="homens">
+        <label for="mulheres">Mulheres</label>
+        <input type="text" name="mulheres" id="mulheres">
+
+        <button type="button" id="btn-draw-chart">Add</button>
+    </fieldset>
+
+    <canvas id="myChart"></canvas>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
+    <script>
+    var ctx = document.getElementById('myChart');
+    var myChart = null;
+
+    $.getJSON('server/ibge_homem_mulheres.json', (r) => data = r)
+        .fail(() => {
+            alert('ajax request fail')
+        }).then(() => {
+            myChart = new Chart(ctx, {
+                type: 'horizontalBar', /* bar line horizontalBar */
+                data: {
+                    labels: data.anos,
+                    datasets: [
+                        {
+                            label: 'Homens',
+                            data: data.homens,
+                            backgroundColor: 'blue'
+                        },{
+                            label: 'Mulheres',
+                            data: data.mulheres,
+                            backgroundColor: 'pink'
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        xAxes: [
+                            {
+                                stacked: true
+                            }
+                        ],
+                        yAxes: [
+                            {
+                                stacked: true
+                            }
+                        ]
+                    }
+                }
+            });
+        });
+
+        $('#btn-draw-chart').click(() => {
+            const ano = $('#ano').val();
+            const homens = $('#homens').val();
+            const mulheres = $('#mulheres').val();
+
+            myChart.data.labels.push(ano);
+            myChart.data.datasets[0].data.push(homens);
+            myChart.data.datasets[1].data.push(mulheres);
+
+            myChart.update();
+        });
+
+    </script>
+</body>
+</html>
